@@ -176,7 +176,7 @@ public:
 		if (!hFile)
 		{
 			TCHAR msg[64+MAX_PATH];
-			_stprintf_s(msg, _T("´ò¿ªÎÄ¼ş[%s]Ê§°Ü£¬´íÎóÂë%u"), path);
+			_stprintf_s(msg, _T("æ‰“å¼€æ–‡ä»¶[%s]å¤±è´¥ï¼Œé”™è¯¯ç %u"), path);
 			sink_->OnException(this, msg);
 			return false;
 		}
@@ -270,17 +270,17 @@ public:
 		switch (state)
 		{
 		case handshaking:
-			sink_->OnException(this, _T("ÎÕÊÖÒÑ³¬Ê±"));
+			sink_->OnException(this, _T("æ¡æ‰‹å·²è¶…æ—¶"));
 			socket_.async_shutdown(boost::bind(&session::handle_shutdown,
 				this));
 			break;
 		case receiving_fist_req:
-			sink_->OnException(this, _T("µÚÒ»¸öÇëÇóÒÑ³¬Ê±"));
+			sink_->OnException(this, _T("ç¬¬ä¸€ä¸ªè¯·æ±‚å·²è¶…æ—¶"));
 			socket_.async_shutdown(boost::bind(&session::handle_shutdown,
 				this));
 			break;
 		case receiving_common_req:
-			sink_->OnException(this, _T("ÒÑ³¬Ê±"));
+			sink_->OnException(this, _T("å·²è¶…æ—¶"));
 			socket_.async_shutdown(boost::bind(&session::handle_shutdown,
 				this));
 			break;
@@ -303,7 +303,7 @@ public:
 		if (!message::reserve(msg, size))
 		{
 			TCHAR err_[128];
-			_stprintf_s(err_, _T("%s·ÖÅä[%u]ÄÚ´æÊ§°Ü"), when, size);
+			_stprintf_s(err_, _T("%såˆ†é…[%u]å†…å­˜å¤±è´¥"), when, size);
 			sink_->OnException(this, err_);
 			socket_.shutdown();
 			return false;
@@ -317,7 +317,7 @@ public:
 		if (!error)
 		{
 			if (!assure_buffer_size(message_read_, default_length,
-				_T("ÎªÎÕÊÖºó×¼±¸½ÓÊÕÏûÏ¢Ê±")))
+				_T("ä¸ºæ¡æ‰‹åå‡†å¤‡æ¥æ”¶æ¶ˆæ¯æ—¶")))
 			{
 				socket_.lowest_layer().close();
 				return;
@@ -356,9 +356,9 @@ public:
 				return;
 			}
 
-			if (offset-bytes_transferred < sizeof(size_t)// µÚÒ»´Î³¬¹ısize_tµÄÊ±ºòÉêÇëÄÚ´æ
+			if (offset-bytes_transferred < sizeof(size_t)// ç¬¬ä¸€æ¬¡è¶…è¿‡size_tçš„æ—¶å€™ç”³è¯·å†…å­˜
 				&& !assure_buffer_size(message_read_,
-				message_read_->length, _T("¶ÁÈ¡Êı¾İÊ±")))
+				message_read_->length, _T("è¯»å–æ•°æ®æ—¶")))
 				return;
 
 			if (offset < message_read_->length)
@@ -378,7 +378,7 @@ public:
 			if (nlen > message::max_cmd_length)
 			{
 				TCHAR szMsg[64];
-				_stprintf_s(szMsg, _T("ÃüÁî³¬³¤£º%u/%u"),
+				_stprintf_s(szMsg, _T("å‘½ä»¤è¶…é•¿ï¼š%u/%u"),
 					nlen, message::max_cmd_length);
 				sink_->OnException(this, szMsg);
 				if (!message::format(message_read_, "error",
@@ -414,7 +414,7 @@ public:
 			case boost::asio::error::eof:
 				break;
 			default:
-				_tprintf_s(_T("¶ÁÈ¡ÍøÂçÊı¾İÒì³££º%s\n"),
+				_tprintf_s(_T("è¯»å–ç½‘ç»œæ•°æ®å¼‚å¸¸ï¼š%s\n"),
 					tempA2T(error.message().c_str(), CP_ACP));
 			}
 			delete this;
@@ -435,7 +435,7 @@ public:
 			case boost::asio::error::eof:
 				break;
 			default:
-				_tprintf_s(_T("·¢ËÍÍøÂçÊı¾İÒì³££º%s\n"),
+				_tprintf_s(_T("å‘é€ç½‘ç»œæ•°æ®å¼‚å¸¸ï¼š%s\n"),
 					tempA2T(error.message().c_str(), CP_ACP));
 			}
 			delete this;
@@ -513,14 +513,14 @@ public:
 			boost::asio::ip::tcp::v4(), nPort), ec);
 		if (ec)
 		{
-			_tprintf_s(_T("°ó¶¨¶Ë¿Ú[%n]³ö´í£º%s\n"), nPort,
+			_tprintf_s(_T("ç»‘å®šç«¯å£[%n]å‡ºé”™ï¼š%s\n"), nPort,
 				tempA2T(ec.message().c_str(), CP_ACP));
 			return FALSE;
 		}
 		io_->acceptor_.listen(boost::asio::socket_base::max_connections, ec);
 		if (ec)
 		{
-			_tprintf_s(_T("¼àÌı¶Ë¿Ú[%n]³ö´í£º%s\n"), nPort,
+			_tprintf_s(_T("ç›‘å¬ç«¯å£[%n]å‡ºé”™ï¼š%s\n"), nPort,
 				tempA2T(ec.message().c_str(), CP_ACP));
 			return FALSE;
 		}
@@ -531,7 +531,7 @@ public:
 
 		if (!io_thread_)
 		{
-			_tprintf_s(_T("Æô¶¯ÍøÂç½ÓÊÕÊ§°Ü\n"));
+			_tprintf_s(_T("å¯åŠ¨ç½‘ç»œæ¥æ”¶å¤±è´¥\n"));
 			return FALSE;
 		}
 
@@ -540,7 +540,7 @@ public:
 			&& GetExitCodeThread(io_thread_, &dwExit)
 			&& dwExit != STILL_ACTIVE)
 		{
-			_tprintf_s(_T("ÍøÂçÆô¶¯ºóÁ¢¼´Í£Ö¹ÁË\n"));
+			_tprintf_s(_T("ç½‘ç»œå¯åŠ¨åç«‹å³åœæ­¢äº†\n"));
 			CloseHandle(io_thread_);
 			io_thread_ = NULL;
 			return FALSE;
@@ -614,14 +614,14 @@ protected:
 		}
 		catch (boost::system::error_code &ec)
 		{
-			printf_s("IOÔËĞĞÒì³£:%s\n", ec.message().c_str());
+			printf_s("IOè¿è¡Œå¼‚å¸¸:%s\n", ec.message().c_str());
 		}
 		catch (boost::system::system_error const& e)
 		{
 			if (e.code().value() != ERROR_ABANDONED_WAIT_0)
-				printf_s("IOÏµÍ³ÔËĞĞÒì³£:%s\n", e.what());
+				printf_s("IOç³»ç»Ÿè¿è¡Œå¼‚å¸¸:%s\n", e.what());
 		}
-		_tprintf_s(_T("IOÏß³ÌÍË³ö\n"));
+		_tprintf_s(_T("IOçº¿ç¨‹é€€å‡º\n"));
 		return 0;
 	}
 

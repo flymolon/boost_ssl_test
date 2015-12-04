@@ -94,7 +94,7 @@ public:
 
 		if (!io_thread_)
 		{
-			_tprintf_s(_T("Æô¶¯ÍøÂç½ÓÊÕÊ§°Ü\n"));
+			_tprintf_s(_T("å¯åŠ¨ç½‘ç»œæ¥æ”¶å¤±è´¥\n"));
 			return FALSE;
 		}
 
@@ -103,7 +103,7 @@ public:
 			&& GetExitCodeThread(io_thread_, &dwExit)
 			&& dwExit != STILL_ACTIVE)
 		{
-			_tprintf_s(_T("ÍøÂçÆô¶¯ºóÁ¢¼´Í£Ö¹ÁË\n"));
+			_tprintf_s(_T("ç½‘ç»œå¯åŠ¨åç«‹å³åœæ­¢äº†\n"));
 			CloseHandle(io_thread_);
 			io_thread_ = NULL;
 			return FALSE;
@@ -135,7 +135,7 @@ public:
 	{
 		if (!message::format(msg_, szCmd, "%s", szContent))
 			return FALSE;
-		printf("½«·¢ËÍ%u\n", msg_->length);
+		printf("å°†å‘é€%u\n", msg_->length);
 		//io_->socket_.write_some(msg_buffer(msg_));
 		boost::asio::async_write(io_->socket_, msg_buffer(msg_),
 			boost::asio::transfer_at_least(msg_->length),
@@ -148,7 +148,7 @@ public:
 	void handle_write(const boost::system::error_code &ec,
 		size_t bytes_transferred)
 	{
-		printf("·¢ËÍ%u/%u[%02X %02X %02X %02X %02X]\n",
+		printf("å‘é€%u/%u[%02X %02X %02X %02X %02X]\n",
 			bytes_transferred, msg_->length,
 			msg_->msg[0], msg_->msg[1], msg_->msg[2],
 			msg_->msg[3], msg_->msg[4]);
@@ -233,14 +233,14 @@ protected:
 		}
 		catch (boost::system::error_code &ec)
 		{
-			printf_s("IOÔËĞĞÒì³£:%s\n", ec.message().c_str());
+			printf_s("IOè¿è¡Œå¼‚å¸¸:%s\n", ec.message().c_str());
 		}
 		catch (boost::system::system_error const& e)
 		{
 			if (e.code().value() != ERROR_ABANDONED_WAIT_0)
-				printf_s("IOÏµÍ³ÔËĞĞÒì³£:%s\n", e.what());
+				printf_s("IOç³»ç»Ÿè¿è¡Œå¼‚å¸¸:%s\n", e.what());
 		}
-		_tprintf_s(_T("IOÏß³ÌÍË³ö\n"));
+		_tprintf_s(_T("IOçº¿ç¨‹é€€å‡º\n"));
 		return 0;
 	}
 

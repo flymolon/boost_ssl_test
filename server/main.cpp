@@ -1,4 +1,4 @@
-// server.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// server.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -21,21 +21,21 @@ public:
 
 		if (!network->Initialize(&szError, this))
 		{
-			_tprintf(_T("³õÊ¼»¯Ê§°Ü:%s\n"), szError);
+			_tprintf(_T("åˆå§‹åŒ–å¤±è´¥:%s\n"), szError);
 			network->Destroy();
 			return;
 		}
 
 		if (!network->LoadCert(CERT_PATH _T("server.pfx")))
 		{
-			_tprintf(_T("¼ÓÔØÖ¤ÊéÊ§°Ü\n"));
+			_tprintf(_T("åŠ è½½è¯ä¹¦å¤±è´¥\n"));
 			network->Destroy();
 			return;
 		}
 
 		if (!network->Start(9466))
 		{
-			_tprintf(_T("¼àÌıÊ§°Ü\n"));
+			_tprintf(_T("ç›‘å¬å¤±è´¥\n"));
 			network->Destroy();
 			return;
 		}
@@ -52,29 +52,29 @@ public:
 
 	virtual BOOL OnNewConnection(ISession *session)
 	{
-		_tprintf_s(_T("ĞÂÁ¬½Ó£º%s\n"), session->GetPeerName());
+		_tprintf_s(_T("æ–°è¿æ¥ï¼š%s\n"), session->GetPeerName());
 		return TRUE;
 	}
 
 	virtual void OnException(ISession *session, LPCTSTR szError)
 	{
-		_tprintf_s(_T("Òì³£[%s]£º%s\n"), session->GetPeerName(), szError);
+		_tprintf_s(_T("å¼‚å¸¸[%s]ï¼š%s\n"), session->GetPeerName(), szError);
 	}
 
 	virtual void OnCommand(ISession *session, LPCSTR szCmd, LPCSTR szContent)
 	{
-		_tprintf_s(_T("ÃüÁî[%s]£º%s[%s]\n"),
+		_tprintf_s(_T("å‘½ä»¤[%s]ï¼š%s[%s]\n"),
 			session->GetPeerName(), tempA2T(szCmd), tempA2T(szContent));
 	}
 
 	virtual void OnDisconnection(ISession *session)
 	{
-		_tprintf_s(_T("Á¬½Ó[%s]ÒÑ¶Ï¿ª\n"), session->GetPeerName());
+		_tprintf_s(_T("è¿æ¥[%s]å·²æ–­å¼€\n"), session->GetPeerName());
 	}
 
 	virtual void OnFileSendComplete(ISession *session)
 	{
-		_tprintf_s(_T("ÒÑ·¢ËÍ\n"));
+		_tprintf_s(_T("å·²å‘é€\n"));
 	}
 };
 
