@@ -83,8 +83,7 @@ public:
 		boost::asio::ip::tcp::resolver::iterator iterator =
 			io_->resolver_.resolve(query);
 
-		io_->socket_.lowest_layer().connect(iterator);
-		boost::asio::connect(io_->socket_.lowest_layer(), iterator,
+		boost::asio::async_connect(io_->socket_.lowest_layer(), iterator,
 			boost::bind(&CBoostNetwork::handle_connect, this,
 				boost::asio::placeholders::error));
 
