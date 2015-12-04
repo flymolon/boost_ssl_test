@@ -11,22 +11,22 @@ public:
 	// INetworkSink methods
 	virtual void OnConnect()
 	{
-		printf("æœåŠ¡å™¨å·²è¿æ¥ä¸Š\n");
+		printf("·şÎñÆ÷ÒÑÁ¬½ÓÉÏ\n");
 	}
 
 	virtual void OnConnectFailed(LPCTSTR szError)
 	{
-		_tprintf_s(_T("æœåŠ¡å™¨è¿æ¥å¤±è´¥,%s\n"), szError);
+		_tprintf_s(_T("·şÎñÆ÷Á¬½ÓÊ§°Ü,%s\n"), szError);
 	}
 
 	virtual void OnDisconnect()
 	{
-		_tprintf_s(_T("æœåŠ¡å™¨å·²æ–­å¼€\n"));
+		_tprintf_s(_T("·şÎñÆ÷ÒÑ¶Ï¿ª\n"));
 	}
 
 	virtual void OnReceive(LPCSTR szCmd, LPCSTR szContent)
 	{
-		_tprintf_s(_T("æ”¶åˆ°æ¶ˆæ¯<%s>:%s\n"), szCmd, szContent);
+		_tprintf_s(_T("ÊÕµ½ÏûÏ¢<%s>:%s\n"), szCmd, szContent);
 	}
 
 
@@ -37,24 +37,24 @@ public:
 		INetwork *network = CreateClientInstance();
 		if (!network)
 		{
-			printf("åˆ›å»ºç»„ä»¶å¤±è´¥\n");
+			printf("´´½¨×é¼şÊ§°Ü\n");
 			return;
 		}
 		if (!network->Initialize(&szError, this))
 		{
-			printf("ç»„ä»¶åˆå§‹åŒ–å¤±è´¥\n");
+			printf("×é¼ş³õÊ¼»¯Ê§°Ü\n");
 			network->Destroy();
 			return;
 		}
 		if (!network->LoadCert(CERT_PATH _T("client.pfx")))
 		{
-			printf("åŠ è½½è¯ä¹¦å¤±è´¥\n");
+			printf("¼ÓÔØÖ¤ÊéÊ§°Ü\n");
 			network->Destroy();
 			return;
 		}
 		if (!network->Connect("127.0.0.1", 9466))
 		{
-			printf("è¿æ¥æœåŠ¡å™¨å¤±è´¥\n");
+			printf("Á¬½Ó·şÎñÆ÷Ê§°Ü\n");
 			network->Destroy();
 			return;
 		}
