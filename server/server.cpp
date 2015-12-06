@@ -342,8 +342,9 @@ public:
 		size_t bytes_transferred, size_t offset)
 	{
 		do_async_wait();
-		if (!error)
+		if (!error && bytes_transferred)
 		{
+			printf("read %04u, offset %04u\n", bytes_transferred, offset);
 			offset += bytes_transferred;
 			if (offset < sizeof(size_t))
 			{
@@ -356,11 +357,19 @@ public:
 				return;
 			}
 
-			if (offset-bytes_transferred < sizeof(size_t)// 第一次超过size_t的时候申请内存
-				&& !assure_buffer_size(message_read_,
-				message_read_->length, _T("读取数据时")))
-				return;
+			if (offset - bytes_transferred < sizeof(size_t))
+			{
+				// 第一次超过size_t的时候申请内存
+				if (!assure_buffer_size(message_read_,
+					message_read_->length + 1, _T("读取数据时")))
+					return;
+			}
 
+			printf("total size: %u/%u\n[%02X %02X %02X %02X]\n"
+				"[%02X %02X %02X %02X]\n", bytes_transferred, message_read_->length,
+				message_read_->msg[0], message_read_->msg[1], message_read_->msg[2],
+				message_read_->msg[3], message_read_->msg[4], message_read_->msg[5],
+				message_read_->msg[6], message_read_->msg[7]);
 			if (offset < message_read_->length)
 			{
 				socket_.async_read_some(
@@ -392,7 +401,7 @@ public:
 				return;
 			}
 
-			((char*)message_read_)[message_read_->length - 1] = 0;
+			message_read_->msg[message_read_->length] = 0;
 
 			// user should call Answer in OnCommand
 			sink_->OnCommand(this, message_read_->buffer,
@@ -400,8 +409,9 @@ public:
 
 			state_ = receiving_common_req;
 			do_async_wait();
+			message_read_->length = message_read_->memory_length - sizeof(size_t);
 			socket_.async_read_some(
-				msg_buffer_offset(message_read_, offset),
+				read_buffer,
 				boost::bind(&session::handle_read, this,
 					boost::asio::placeholders::error,
 					boost::asio::placeholders::bytes_transferred,

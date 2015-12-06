@@ -44,5 +44,18 @@
     <ClInclude Include="..\boostssl.hpp">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="server.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="server.ico">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

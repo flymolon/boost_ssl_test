@@ -45,19 +45,19 @@ public:
 
 	virtual BOOL LoadCert(LPCTSTR path)
 	{
-		try
-		{
-			context_.set_password_callback(boost::bind(&CBoostNetwork::get_password, this));
-			context_.load_verify_file("servercert.pem");
-			context_.use_certificate_file("clientcert.pem", boost::asio::ssl::context_base::pem);
-			context_.use_private_key_file("clientkey.pem", boost::asio::ssl::context_base::pem);
-		}
-		catch (boost::system::error_code & ec)
-		{
-			printf("err> %s\n", ec.message().c_str());
-			return FALSE;
-		}
-		return TRUE;
+// 		try
+// 		{
+// 			context_.set_password_callback(boost::bind(&CBoostNetwork::get_password, this));
+// 			context_.load_verify_file("servercert.pem");
+// 			context_.use_certificate_file("clientcert.pem", boost::asio::ssl::context_base::pem);
+// 			context_.use_private_key_file("clientkey.pem", boost::asio::ssl::context_base::pem);
+// 		}
+// 		catch (boost::system::error_code & ec)
+// 		{
+// 			printf("err> %s\n", ec.message().c_str());
+// 			return FALSE;
+// 		}
+// 		return TRUE;
 		return load_pfx(context_, path, "test");
 	}
 
@@ -68,6 +68,7 @@ public:
 
 	virtual BOOL Connect(LPCSTR addr, int port)
 	{
+		boost::system::error_code error = boost::asio::error::host_not_found;
 		char sport[6];
 		if (port <= 0 || port >= 65535)
 			return FALSE;
@@ -79,13 +80,21 @@ public:
 			boost::bind(&CBoostNetwork::verify_certificate, this, _1, _2));
 
 		_itoa_s(port, sport, 10);
+
+
 		boost::asio::ip::tcp::resolver::query query(addr, sport);
 		boost::asio::ip::tcp::resolver::iterator iterator =
 			io_->resolver_.resolve(query);
 
-		boost::asio::async_connect(io_->socket_.lowest_layer(), iterator,
-			boost::bind(&CBoostNetwork::handle_connect, this,
-				boost::asio::placeholders::error));
+		io_->socket_.lowest_layer().connect(*iterator, error);
+
+		if (error)
+			return FALSE;
+
+		io_->socket_.handshake(boost::asio::ssl::stream_base::client, error);
+
+		if (error)
+			return FALSE;
 
 		io_thread_ = CreateThread(NULL, 0,
 			(LPTHREAD_START_ROUTINE)&CBoostNetwork::_ThreadProc,
@@ -105,6 +114,7 @@ public:
 			_tprintf_s(_T("网络启动后立即停止了\n"));
 			CloseHandle(io_thread_);
 			io_thread_ = NULL;
+			io_.reset();
 			return FALSE;
 		}
 
@@ -147,10 +157,16 @@ public:
 	void handle_write(const boost::system::error_code &ec,
 		size_t bytes_transferred)
 	{
-		printf("发送%u/%u[%02X %02X %02X %02X %02X]\n",
-			bytes_transferred, msg_->length,
+		if (ec || bytes_transferred == 0)
+		{
+			io_.reset();
+			return;
+		}
+		printf("total size: %u/%u\n[%02X %02X %02X %02X]\n"
+			"[%02X %02X %02X %02X]\n", bytes_transferred, msg_->length,
 			msg_->msg[0], msg_->msg[1], msg_->msg[2],
-			msg_->msg[3], msg_->msg[4]);
+			msg_->msg[3], msg_->msg[4], msg_->msg[5],
+			msg_->msg[6], msg_->msg[7]);
 		if (bytes_transferred < msg_->length)
 		{
 			boost::asio::transfer_at_least(msg_->length);

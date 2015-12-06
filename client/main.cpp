@@ -59,8 +59,9 @@ public:
 			return;
 		}
 
-		Sleep(4000);
-		network->Send("cmd_verify", "please verify me!!\n");
+		network->Send("cmd_verify", "12345678901234567890");
+		network->Send("cmd_verify", "abcdefg");
+		network->Send("cmd_verify", "hahahahahahaha");
 		MSG msg;
 		while (GetMessage(&msg, NULL, 0, 0))
 		{

@@ -28,7 +28,6 @@ struct message
 			msg = p;
 			msg->memory_length = size + sizeof(size_t)*2;
 		}
-		msg->length = size + sizeof(size_t);
 		return true;
 	}
 
@@ -43,6 +42,8 @@ struct message
 		bufferlen = _vscprintf(fmt, ap);
 		if (!reserve(msg, bufferlen + cmdlen + 2))
 			return false;
+
+		msg->length = bufferlen + cmdlen + 2 + sizeof(size_t);
 
 		strcpy_s(msg->buffer, cmdlen + 1, cmd);
 		return (vsprintf_s(msg->buffer + cmdlen + 1, bufferlen + 1, fmt, ap)
