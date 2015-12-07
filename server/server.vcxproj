@@ -33,13 +33,13 @@
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\..\..\libs\dependencies\boost-1_48_0-vc90.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\..\libs\dependencies\openssl-1.0.1g-vc90mts.props" />
+    <Import Project="..\libboost-1-48-0-vc90x86-mts.props" />
+    <Import Project="..\openssl-1.0.2d-vc90x86-mts.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\..\..\..\..\..\..\..\..\libs\dependencies\boost-1_48_0-vc90.props" />
-    <Import Project="..\..\..\..\..\..\..\..\..\..\libs\dependencies\openssl-1.0.1g-vc90mts.props" />
+    <Import Project="..\libboost-1-48-0-vc90x86-mts.props" />
+    <Import Project="..\openssl-1.0.2d-vc90x86-mts.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -115,6 +115,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="server.ico" />
+    <None Include="server.pfx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -48,5 +48,6 @@
     <None Include="client.ico">
       <Filter>资源文件</Filter>
     </None>
+    <None Include="client.pfx" />
   </ItemGroup>
 </Project>
