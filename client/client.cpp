@@ -31,11 +31,10 @@ public:
 		: io_thread_(NULL)
 		, context_(boost::asio::ssl::context::sslv2_client)
 		, connected_(false)
-		, msg_(NULL)
 	{
 	}
 
-	virtual ~CBoostNetwork() { if (msg_) { free(msg_); msg_ = NULL; } }
+	virtual ~CBoostNetwork() {}
 
 	virtual BOOL Initialize(LPCTSTR *szError, INetworkSink *pSink)
 	{
@@ -142,42 +141,41 @@ public:
 
 	virtual BOOL Send(LPCSTR szCmd, LPCSTR szContent)
 	{
-		if (!message::format(msg_, szCmd, "%s", szContent))
+		message *msg = NULL;
+		if (!message::format(msg, szCmd, "%s", szContent))
 			return FALSE;
-		printf("将发送%u\n", msg_->length);
-		//io_->socket_.write_some(msg_buffer(msg_));
-		boost::asio::async_write(io_->socket_, msg_buffer(msg_),
-			boost::asio::transfer_at_least(msg_->length),
+		printf("将发送%u\n", msg->length);
+		boost::asio::async_write(io_->socket_, msg_buffer(msg),
+			boost::asio::transfer_at_least(msg->length),
 			boost::bind(&CBoostNetwork::handle_write, this,
 				boost::asio::placeholders::error,
-				boost::asio::placeholders::bytes_transferred));
+				boost::asio::placeholders::bytes_transferred, msg, 0));
 		return TRUE;
 	}
 
 	void handle_write(const boost::system::error_code &ec,
-		size_t bytes_transferred)
+		size_t bytes_transferred, message *msg, size_t offset)
 	{
 		if (ec || bytes_transferred == 0)
 		{
+			if (msg)
+				free(msg);
 			io_.reset();
 			return;
 		}
-		printf("total size: %u/%u\n[%02X %02X %02X %02X]\n"
-			"[%02X %02X %02X %02X]\n", bytes_transferred, msg_->length,
-			msg_->msg[0], msg_->msg[1], msg_->msg[2],
-			msg_->msg[3], msg_->msg[4], msg_->msg[5],
-			msg_->msg[6], msg_->msg[7]);
-		if (bytes_transferred < msg_->length)
+		if (bytes_transferred < msg->length)
 		{
-			boost::asio::transfer_at_least(msg_->length);
-			io_->socket_.async_write_some(msg_buffer(msg_),
+			offset += bytes_transferred;
+			boost::asio::transfer_at_least(msg->length);
+			io_->socket_.async_write_some(msg_buffer_offset(msg, offset),
 				boost::bind(&CBoostNetwork::handle_write, this,
 					boost::asio::placeholders::error,
-					boost::asio::placeholders::bytes_transferred));
+					boost::asio::placeholders::bytes_transferred, msg, offset));
 		}
-		else if (bytes_transferred == msg_->length)
+		else if (bytes_transferred == msg->length)
 		{
-			printf("message sending complete %u\n", msg_->length);
+			printf("message sending complete %u\n", msg->length);
+			free(msg);
 		}
 	}
 
@@ -265,7 +263,6 @@ protected:
 	boost::asio::ssl::context context_;
 	INetworkSink *sink_;
 	bool connected_;
-	message *msg_;
 };
 
 INetwork *CreateClientInstance()
