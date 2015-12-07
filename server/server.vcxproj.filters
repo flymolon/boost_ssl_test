@@ -57,6 +57,5 @@
     <None Include="server.ico">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="server.pfx" />
   </ItemGroup>
 </Project>

@@ -112,7 +112,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="client.ico" />
-    <None Include="client.pfx" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
